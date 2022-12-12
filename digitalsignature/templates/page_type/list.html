@@ -4,8 +4,7 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Basic Table</h4>
-                <h6 class="card-subtitle">Add class <code>.table</code></h6>
+                <h4 class="card-title">Sign Pdf</h4>
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -33,13 +32,13 @@
             </div>
         </div>
     </div>
-    <form action="#">
+    <form action="{% url 'UploadPdf' %}">
         <div class="col-lg-6 col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">PDF Upload</h4>
                     <label for="input-file-now" class="form-label">First upload pdf</label>
-                    <input type="file" id="input-file-now" class="dropify" />
+                    <input type="file" name="file" id="input-file-now" class="dropify" />
                 </div>
                 <button type="submit" class="btn btn-success text-white"> <i class="fa fa-check"></i> Save</button>
             <button type="button" class="btn btn-inverse">Cancel</button>
