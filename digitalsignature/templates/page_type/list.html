@@ -13,18 +13,19 @@
                                 <th>File Name</th>
                                 <th>Sign Pdf</th>
                                 <th>Signed File</th>
-                                <th>action</th>
-                                
+                                <th>action</th>                                
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Deshmukh</td>
-                                <td><button type="submit" class="btn btn-success text-white"> <i class="fa fa-check"></i>sign pdf</button></td>
-                                <td>@Genelia</td>
-                                <td><span class="label label-danger">delete</span> </td>
-                            </tr>
+                            {% for file in files %}
+                                <tr>
+                                    <td>{{file.id}}</td>
+                                    <td><a href="{% if file.unsigned_file %} {{file.unsigned_file.url}} {% endif %}" target="_blank">open</a></td>
+                                    <td><button type="submit" class="btn btn-success text-white"> <i class="fa fa-check"></i><a href="{%  %}">pdf</a></button></td>
+                                    <td>{{file.signed_file}}</td>
+                                    <td><span class="label label-danger">delete</span> </td>
+                                </tr>
+                            {% endfor %}
                          
                         </tbody>
                     </table>
@@ -32,13 +33,14 @@
             </div>
         </div>
     </div>
-    <form action="{% url 'UploadPdf' %}">
+    <form action="{% url 'UploadPdf' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
         <div class="col-lg-6 col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">PDF Upload</h4>
                     <label for="input-file-now" class="form-label">First upload pdf</label>
-                    <input type="file" name="file" id="input-file-now" class="dropify" />
+                    <input type="file" name="unsigned_file" id="input-file-now" class="dropify" />
                 </div>
                 <button type="submit" class="btn btn-success text-white"> <i class="fa fa-check"></i> Save</button>
             <button type="button" class="btn btn-inverse">Cancel</button>
