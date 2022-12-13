@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from digitalsignature.models import Files
 
+# https://www.pdftron.com/documentation/python/guides/features/signature/certify-pdf/
 # Create your views here.
 def PdfList(request):
     files = Files.objects.all()

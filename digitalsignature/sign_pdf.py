@@ -5,6 +5,14 @@ import time
 import argparse
 from PDFNetPython3.PDFNetPython import *
 from typing import Tuple
+from django.http import HttpResponse
+from digitalsignature.models import Files
+
+x_coordinate = 330
+y_coordinate = 280
+signatureID = "BM"
+pages = None,
+
 
 
 def createKeyPair(type, bits):
@@ -82,16 +90,21 @@ def load():
     return True
 
 
-def sign_file(input_file: str, signatureID: str, x_coordinate: int, 
-            y_coordinate: int, pages: Tuple = None, output_file: str = None
-              ):
+def sign_file(request,id):
+
+    file_obj = Files.objects.get(id=id)
+    url = 'http://127.0.0.1:8000'+file_obj.unsigned_file.url
+   
     """Sign a PDF file"""
     # An output file is automatically generated with the word signed added at its end
-    if not output_file:
-        output_file = (os.path.splitext(input_file)[0]) + "_signed.pdf"
+    output_file = 'md' + "_signed.pdf"
+    # return HttpResponse(output_file)
     # Initialize the library
     PDFNet.Initialize()
-    doc = PDFDoc(input_file)
+    import requests
+    file_content = requests.get(url)
+    doc = PDFDoc(bytearray(file_content.content), len(file_content.content))
+    # doc = PDFDoc(input_file)
     # Create a signature field
     sigField = SignatureWidget.Create(doc, Rect(
         x_coordinate, y_coordinate, x_coordinate+100, y_coordinate+50), signatureID)
@@ -108,6 +121,7 @@ def sign_file(input_file: str, signatureID: str, x_coordinate: int,
     sign_filename = os.path.dirname(
         os.path.abspath(__file__)) + "\static\signature.jpg"
     # Self signed certificate
+    # return HttpResponse(sign_filename)
     pk_filename = os.path.dirname(
         os.path.abspath(__file__)) + "\static\container.pfx"
     # Retrieve the signature field.
@@ -115,6 +129,7 @@ def sign_file(input_file: str, signatureID: str, x_coordinate: int,
     approval_signature_digsig_field = DigitalSignatureField(approval_field)
     # Add appearance to the signature field.
     img = Image.Create(doc.GetSDFDoc(), sign_filename)
+
     found_approval_signature_widget = SignatureWidget(
         approval_field.GetSDFObj())
     found_approval_signature_widget.CreateSignatureAppearance(img)
@@ -124,7 +139,7 @@ def sign_file(input_file: str, signatureID: str, x_coordinate: int,
     doc.Save(output_file, SDFDoc.e_incremental)
     # Develop a Process Summary
     summary = {
-        "Input File": input_file, "Signature ID": signatureID, 
+        "Input File": url, "Signature ID": signatureID, 
         "Output File": output_file, "Signature File": sign_filename, 
         "Certificate File": pk_filename
     }
@@ -132,7 +147,7 @@ def sign_file(input_file: str, signatureID: str, x_coordinate: int,
     print("## Summary ########################################################")
     print("\n".join("{}:{}".format(i, j) for i, j in summary.items()))
     print("###################################################################")
-    return True
+    return HttpResponse("signed completed")
 
 
 def sign_folder(**kwargs):
